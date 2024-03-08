@@ -7,49 +7,60 @@ import { currentStudent } from "@/redux/actions/studentAction";
 import html2canvas from "html2canvas";
 
 function Resume() {
-
-  const [showButton, setShowButton] = useState(window.innerWidth > 880);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setShowButton(window.innerWidth > 880);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  const downloadPDF = () => {
-    const element = document.getElementById("resume");
+    const [showButton, setShowButton] = useState(
+      typeof window !== "undefined" && window.innerWidth > 880
+    );
   
-    // Use html2canvas to take a screenshot of the element
-    html2canvas(element, {
-      scale: window.devicePixelRatio, // Use device's pixel ratio to maintain visual fidelity
-      logging: true,
-      useCORS: true, // Helps with loading external resources, if any
-    }).then((canvas) => {
-      // Initialize jsPDF
-      const imgWidth = 210; // A4 width in mm
-      const maxImgHeight = 250; // Maximum allowed height in mm
-      let imgHeight = (canvas.height * imgWidth) / canvas.width;
+    useEffect(() => {
+      const handleResize = () => {
+        setShowButton(typeof window !== "undefined" && window.innerWidth > 880);
+      };
   
-      // Check if the height exceeds the maximum allowed height
-      if (imgHeight > maxImgHeight) {
-        imgHeight = maxImgHeight;
+      if (typeof window !== "undefined") {
+        window.addEventListener("resize", handleResize);
       }
   
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm");
-      let position = 0;
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("resize", handleResize);
+        }
+      };
+    }, []);
   
-      // Add image to PDF
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      pdf.save("resume.pdf");
-    });
-  };
+    const downloadPDF = () => {
+      if (typeof window === "undefined") {
+        // Skip download if not in a browser environment
+        return;
+      }
+  
+      const element = document.getElementById("resume");
+  
+      // Use html2canvas to take a screenshot of the element
+      html2canvas(element, {
+        scale: window.devicePixelRatio, // Use device's pixel ratio to maintain visual fidelity
+        logging: true,
+        useCORS: true, // Helps with loading external resources, if any
+      }).then((canvas) => {
+        // Initialize jsPDF
+        const imgWidth = 210; // A4 width in mm
+        const maxImgHeight = 250; // Maximum allowed height in mm
+        let imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+        // Check if the height exceeds the maximum allowed height
+        if (imgHeight > maxImgHeight) {
+          imgHeight = maxImgHeight;
+        }
+  
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm");
+        let position = 0;
+  
+        // Add image to PDF
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        pdf.save("resume.pdf");
+      });
+    };
+  
   
 
   const dispatch = useDispatch();
@@ -85,7 +96,6 @@ function Resume() {
   useEffect(() => {
     dispatch(currentStudent());
   }, []);
-  console.log(student);
 
   return (
     <div className="bg-gray-100 p-5 lg:p-10  ">
