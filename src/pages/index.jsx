@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 import { MdReviews } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { currentStudent } from "@/redux/actions/studentAction";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { CiLocationOn } from "react-icons/ci";
 import { GiTakeMyMoney } from "react-icons/gi";
@@ -19,12 +19,24 @@ import { IoNewspaper } from "react-icons/io5";
 import { AiOutlineSafety } from "react-icons/ai";
 import { IoIosSchool } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
+import axios from 'axios';
 
 export default function Home() {
+
   var array = [1, 2, 3, 4, 5, 6];
   const router = useRouter();
   const { student, error, loading } = useSelector((state) => state.student);
   const dispatch = useDispatch();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [jobs, setJobs] = useState([]);
+  const basePath = `${process.env.NEXT_PUBLIC_REACT_APP_API_URL}/user`
+
+  const searchJobs = async () => {
+    console.log("called")
+    const response = await axios.post(`${basePath}/search?q=${searchTerm}`);
+    setJobs(response.data);
+    console.log(response.data)
+  };
 
   useEffect(() => {
     dispatch(currentStudent());
@@ -33,6 +45,12 @@ export default function Home() {
   const redirectToJob = () => {
     router.push("/Job");
   };
+
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+        setJobs([]);
+    }
+  }, [searchTerm]);
 
   return (
     <div className="w-[100vw]">
@@ -50,13 +68,31 @@ export default function Home() {
               type="text"
               className=" rounded-xl py-10 pt-8 text-[10px] sm:text-base"
               placeholder="enter skills/ designations"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
             <div className="absolute top-[21px] left-5 ">
             <FaSearch className="text-[15px]" />
             </div>
-            <button className=" absolute bg-[#2ea1e0] py-2 px-6 rounded-2xl top-[10px] right-3 text-white ">
+            <button className=" absolute bg-[#2ea1e0] py-2 px-6 rounded-2xl top-[10px] right-3 text-white " onClick={searchJobs}>
               Serch
             </button>
+          {jobs?.length != 0 &&
+          <div id="serchdiv" className=" absolute top-[110%] w-[800px] h-[15vh] rounded-xl border border-slate-300 bg-[#f4f2f6] px-3 pt-4 overflow-y-auto ">
+            {
+              jobs?.map((job) =>{
+                return <div className="px-3 py-2 flex justify-between gap-3 border border-slate-300 rounded-3xl ">
+                  <div className="flex gap-1">
+                    <h6>{job.title}</h6>
+                    <p id="serchdivtype" className="text-[#424242]">| {job.jobType}</p>
+                  </div>
+                  <h6 id="serchdivlocation">{job.location}</h6>
+
+                </div>
+              })
+            }
+          </div>
+          }
           </div>
 
           <div className="w-full flex justify-center gap-5 mt-5">

@@ -24,7 +24,9 @@ const Job = () => {
   const [search, setSearch] = useState({
     profile: "",
     location: "",
-    skills:[]
+    skills:[],
+    jobType: "",
+
   });
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [isAlreadyApplied, setIsAlreadyApplied] = useState();
@@ -39,30 +41,42 @@ const Job = () => {
     category: "",
     experience: "",
     salary: "",
-    skills:[]
-  });
- 
-
+    skills:[],
+    jobType:"Remote"
+  })
+  const handleCheckboxChange = (checkboxName) => {
+    console.log(checkboxName);
+    // SetFilters((prevFilters) => {
+    //   return {
+    //     ...prevFilters,
+    //     jobType: {
+    //       ...prevFilters.jobType,
+    //       [checkboxName]: !prevFilters.jobType[checkboxName],
+    //     },
+    //   };
+    // });
+  };
+  
+  
+  
   const handleChange = (e) => {
     if (e.target.name === "skills") {
-      SetFilters({ ...Filters, [e.target.name]: [e.target.value] });
+      let skillArr = e.target.value.split(",");
+      SetFilters({ ...Filters, skills: skillArr });
+    } else if (e.target.type === "checkbox") {
+      handleCheckboxChange(e.target.name);
+
     } else {
       SetFilters({ ...Filters, [e.target.name]: e.target.value });
     }
   };
   
+  
+  const { jobType } = Filters;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const filteredJobs = allJobs.filter((job) => {
-      return (
-        Filters.skills.length === 0 ||
-        Filters.skills.some((skill) => job.skills.includes(skill))
-      );
-
-    });
-  console.log(filteredJobs)
-    // Dispatch the filtered jobs along with the filters
-    dispatch(AllJobs({ page: Page, ...Filters, allJobs: filteredJobs }));
+    dispatch(AllJobs({ page: Page, ...Filters,jobType  }));
   };
   
   useEffect(() => {
@@ -96,7 +110,8 @@ const Job = () => {
 
               <SidebarLG
                 handleSubmit={handleSubmit}
-                handleChange={handleChange}
+                handleChange={handleChange} handleCheckboxChange={handleCheckboxChange}
+                Filters={Filters} 
               />
 
               <div>
@@ -285,7 +300,8 @@ const Job = () => {
 
 export default Job;
 
-function SidebarLG({ handleSubmit, handleChange }) {
+function SidebarLG({ handleSubmit, handleChange,handleCheckboxChange,Filters }) {
+  
   const [roleCategories, setRoleCategories] = useState([
     { label: "Software Developer", isChecked: false },
     { label: "IT Consulting", isChecked: false },
@@ -300,11 +316,6 @@ function SidebarLG({ handleSubmit, handleChange }) {
 
     // Add more categories as needed
   ]);
-  const handleCheckboxChange = (index) => {
-    const updatedCategories = [...roleCategories];
-    updatedCategories[index].isChecked = !updatedCategories[index].isChecked;
-    setRoleCategories(updatedCategories);
-  };
 
   return (
     <div className="side bg-white p-6  h-auto  hidden lg:inline md:w-[45%] lg:w-[35%] rounded-md">
@@ -348,20 +359,29 @@ function SidebarLG({ handleSubmit, handleChange }) {
           </div>
 
           <div className="flex items-center gap-1">
-            <input type="checkbox" />
-            <p>Work from Home</p>
-          </div>
-          <div className="flex items-center gap-1">
-            <input type="checkbox" />
-            <p>part time</p>
-          </div>
-          <div className="flex items-center gap-1">
-            <input type="checkbox" />
-            <p> internships</p>
-          </div>
-          <div>
-          <input type="number" placeholder="Annual Salary"/>
-                      </div>
+          <input
+  type="checkbox"
+  onChange={() => handleCheckboxChange('In Office')}
+  checked={Filters.jobType['In Office']}
+/>
+<p>In Office</p>
+</div>
+<div className="flex items-center gap-1">
+  <input
+    type="checkbox"
+    onChange={() => handleCheckboxChange('Remote')}
+    checked={Filters.jobType['Remote']}
+  />
+  <p>Remote</p>
+</div>
+<div className="flex items-center gap-1">
+  <input
+    type="checkbox"
+    onChange={() => handleCheckboxChange('internships')}
+    checked={Filters.jobType['internships']}
+  />
+  <p>Internships</p>
+</div>
         </div>
         <div className="flex flex-col gap-[10px] mt-[20px]">
             <p className="text-black text-[14px] font-[600]">Departments</p>
@@ -403,8 +423,6 @@ function SidebarLG({ handleSubmit, handleChange }) {
         <div className="flex items-center gap-1" key={index}>
           <input
             type="checkbox"
-            checked={category.isChecked}
-            onChange={() => handleCheckboxChange(index)}
           />
           <p>{category.label}</p>
         </div>
@@ -418,8 +436,6 @@ function SidebarLG({ handleSubmit, handleChange }) {
         <div className="flex items-center gap-1" key={index}>
           <input
             type="checkbox"
-            checked={category.isChecked}
-            onChange={() => handleCheckboxChange(index)}
           />
           <p>{category.label}</p>
         </div>

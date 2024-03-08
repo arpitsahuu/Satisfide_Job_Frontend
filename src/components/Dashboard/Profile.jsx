@@ -1,5 +1,5 @@
-import { updateEmployee } from "@/redux/actions/employeeAction";
-import React, { useEffect, useState } from "react";
+import { avatarEmployee, updateEmployee } from "@/redux/actions/employeeAction";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -35,6 +35,31 @@ const Profile = () => {
     dispatch(updateEmployee(data));
     setEditMode(false);
   });
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const formRef = useRef();
+  const inputRef = useRef();
+  const btnRef = useRef();
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+    btnRef.current.click();
+  };
+
+  const handleSubmitlogo = async (event) => {
+    event.preventDefault();
+    if (selectedFile) {
+      dispatch(avatarEmployee(selectedFile));
+    } else {
+      console.log("No file selected");
+    }
+  };
+
+  const handleClick = () => {
+    inputRef.current.click();
+  };
+
 
   return (
     <div className="flex items-center justify-center flex-col  ">
@@ -268,14 +293,30 @@ const Profile = () => {
               </div>
             </div>
           </div>
-
-          <div className="mt-6 flex items-center justify-end gap-x-6">
+          <form ref={formRef} onSubmit={handleSubmitlogo} className="hidden">
+                  <input
+                    ref={inputRef}
+                    type="file"
+                    name="organisationlogo"
+                    onChange={handleFileChange}
+                  />
+                  <button ref={btnRef} type="submit">
+                    Submit
+                  </button>
+                </form>
+          <div className="mt-6 flex items-center justify-between gap-x-6">
           <button
-  onClick={handleEdit}
-  className="px-4 py-2 text-sm bg-[#4f91ce] border-green-500 text-white  hover:bg-[#4f91ce] hover:bg-green-500 hover:rounded-md cursor-pointer transition-all duration-300 ease-in-out"
+              onClick={handleClick}
+              className="px-4 py-2 text-sm bg-[#4f91ce] border-green-500 text-white  hover:bg-[#4f91ce] hover:bg-green-500 hover:rounded-md cursor-pointer transition-all duration-300 ease-in-out"
 >
-  Edit
-</button>
+              Change Logo
+          </button>
+          <button
+              onClick={handleEdit}
+              className="px-4 py-2 text-sm bg-[#4f91ce] border-green-500 text-white  hover:bg-[#4f91ce] hover:bg-green-500 hover:rounded-md cursor-pointer transition-all duration-300 ease-in-out"
+>
+              Edit
+          </button>
 
 
           </div>

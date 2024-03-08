@@ -797,8 +797,8 @@ label {
 -moz-box-shadow: 2px 18px 46px -27px rgba(107,106,107,1);
 box-shadow: 2px 18px 46px -27px rgba(107,106,107,1);
 }
-
-#INPUTS input[type="text"],
+/* #INPUTS  */
+input[type="text"],
 textarea,
 select {
   width: 900px;
@@ -922,7 +922,9 @@ button[type="submit"]:hover {
   }
   #search{
     width: 750px;
-    
+  }
+  #serchdiv{
+    width: 750px;
   }
   #feature{
     gap: 5px;
@@ -952,7 +954,9 @@ button[type="submit"]:hover {
   }
   #search{
     width: 470px;
-    
+  }
+  #serchdiv{
+    width: 470px;
   }
   
 }
@@ -980,7 +984,15 @@ button[type="submit"]:hover {
   #search{
     width: 320px;
     /* color: #789fff; */
-    
+  }
+  #serchdiv{
+    width: 320px;
+  }
+  #serchdivlocation{
+    display: none;
+  }
+  #serchdivtype{
+    display: none;
   }
   
 }

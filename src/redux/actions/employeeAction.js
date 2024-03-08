@@ -144,7 +144,7 @@ export const avatarEmployee = (fileData) => async (dispatch) => {
     try {
         dispatch(setLoading(true));
         const formData = new FormData();
-        formData.append('avatar', fileData);
+        formData.append('organisationlogo', fileData);
         const { data } = await axios.post(`${basePath}/employeravatar`, formData, {
             withCredentials: true,
             headers: {
